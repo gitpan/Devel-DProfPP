@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 use Carp;
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 use constant DUMMY => sub {};
 my $magic = "fOrTyTwO";
 
@@ -55,7 +55,7 @@ sub new {
         enter => ($args{enter} || DUMMY),
         leave => ($args{leave} || DUMMY),
         stack => [],
-        syms  => [],
+        syms  => {},
         cum_times => {}
     }, $class;
 }
@@ -103,14 +103,14 @@ sub _parse_body {
 
     while (<$fh>) {
         chomp;
-        /^\@ (\d+) (\d+) (\d+)/ && do { $self->_add_times($1,$2,$3);     next;};
-        /^\& (\d+) (\S+) (\S+)/ && do { $self->_introduce_sub($1,$2,$3); next;};
-        /^\+ (\d+)/             && do { $self->_enter($1);               next;};
-        /^\- (\d+)/             && do { $self->_leave($1);               next;};
+        /^\@ ([\da-f]+) (\d+) (\d+)/ && do { $self->_add_times($1,$2,$3);     next;};
+        /^\& ([\da-f]+) (\S+) (\S+)/ && do { $self->_introduce_sub($1,$2,$3); next;};
+        /^\+ ([\da-f]+)/             && do { $self->_enter($1);               next;};
+        /^\- ([\da-f]+)/             && do { $self->_leave($1);               next;};
         /^\+ & (\S+)/           && do { $self->_enter_named($1);         next;};
         /^\- & (\S+)/           && do { $self->_leave_named($1);         next;};
-        /^\* (\d+)/             && do { $self->_goto($1);                next;};
-        /^\/ (\d+)/             && do { $self->_die($1);                 next;};
+        /^\* ([\da-f]+)/             && do { $self->_goto($1);                next;};
+        /^\/ ([\da-f]+)/             && do { $self->_die($1);                 next;};
         die "Didn't expect to see <$_> at this stage of play";
     }
 }
@@ -132,7 +132,7 @@ sub _add_times {
 
 sub _introduce_sub {
     my ($self, $num, $pack, $sym) = @_;
-    $self->{syms}[$num] = $pack."::".$sym;
+    $self->{syms}{$num} = $pack."::".$sym;
 }
 
 =head2 stack
@@ -192,21 +192,21 @@ sub header { $_[0]->{header} }
 =head1 HOOKS
 
 The C<enter> and C<leave> hooks are called every time a subroutine is,
-predictable, entered or left. In each case, the name of the subroutine
-is passed in as a parameter to the hook, and everything else can be
-accessed through the parser object and the stack.
+predictable, entered or left. In each case, the parser and name of the
+subroutine are passed in as parameters to the hook, and everything else
+can be accessed through the parser object and the stack.
 
 =cut
 
 sub _enter { 
     my ($self, $num) = @_;
-    my $name = $self->{syms}[$num];
+    my $name = $self->{syms}{$num};
     die "Entering unknown subroutine $num" unless $name;
     $self->_enter_named($name);
 }
 sub _leave {
     my ($self, $num) = @_;
-    my $name = $self->{syms}[$num];
+    my $name = $self->{syms}{$num};
     die "Leaving unknown subroutine $num" unless $name;
     $self->_leave_named($name);
 }
@@ -228,12 +228,12 @@ sub _enter_named {
         height => ($#{$self->{stack}} + 1)
     );
     push @{$self->{stack}}, $frame;
-    $self->{enter}->($sub);
+    $self->{enter}->($self, $sub);
 }
 
 sub _leave_named {
     my ($self, $sub) = @_;
-    $self->{leave}->($sub);
+    $self->{leave}->($self, $sub);
     pop @{$self->{stack}};
 }
 

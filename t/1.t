@@ -9,7 +9,7 @@ my @times;
 
 sub my_enter { $call_count++; }
 
-sub my_leave { my $name = shift;
+sub my_leave { my $name = $_[1];
     $leave_count++;
     if ($name eq "main::_path") { @times = ($thing->stack)[-1]->cum_times; }
 }

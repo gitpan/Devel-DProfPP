@@ -1,5 +1,9 @@
 Revision history for Perl extension Devel::DProfPP.
 
+1.1   Thu Jun 24 13:38:18 BST 2004
+    - Subroutine IDs are in hexa-bloody-decimal
+    - Actually pass in parser object to callbacks
+
 0.01  Mon Apr  7 22:44:55 2003
 	- original version; created by h2xs 1.2 with options
 		-AX -n Devel::DProfPP
