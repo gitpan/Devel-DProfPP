@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 use Carp;
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 use constant DUMMY => sub {};
 my $magic = "fOrTyTwO";
 
@@ -79,7 +79,10 @@ sub _parse_header {
     my ($over_tests, $rrun_utime, $rrun_stime, $rrun_rtime, $total_marks);
     my $fh = $self->{fh};
     my $head = <$fh>;
-    croak "This isn't really DProf output" unless $head =~ /$magic/;
+    if(!defined $head || $head !~ /$magic/) {
+        croak "This isn't really DProf output";
+    }
+
     while (<$fh>) {
         last if /^PART2/;
         eval;
@@ -184,6 +187,8 @@ of a subroutine call. C<Devel::DProfPP> doesn't do this for you.
 =item rrun_rtime
 
 The user, system and real times (in cycles) for the whole program run.
+
+=back 
 
 =cut
 

@@ -1,5 +1,9 @@
 Revision history for Perl extension Devel::DProfPP.
-
+1.2   Thu Oct 14              2004
+    - Steve Peters is the new maintainer
+    - Added an '=over" to fix bug in the POD
+    - Changed handling of bad headers to stop a warning
+    - Added several new tests to increase test coverage
 1.1   Thu Jun 24 13:38:18 BST 2004
     - Subroutine IDs are in hexa-bloody-decimal
     - Actually pass in parser object to callbacks

@@ -1,7 +1,14 @@
 Changes
 DProfPP.pm
-MANIFEST
 Makefile.PL
+MANIFEST
+META.yml			Module meta-data (added by MakeMaker)
+t/00.load.t
 t/1.t
+t/2.t
+t/not_tmon.out
+t/not_tmon2.out
+t/pod-coverage.t
+t/pod.t
 t/tmon.out
-META.yml                                Module meta-data (added by MakeMaker)
+t/tmon_bad.out
