@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 use Carp;
-our $VERSION = '1.2';
+our $VERSION = '1.3';
 use constant DUMMY => sub {};
 my $magic = "fOrTyTwO";
 
@@ -14,12 +14,12 @@ Devel::DProfPP - Parse C<Devel::DProf> output
 =head1 SYNOPSIS
 
   use Devel::DProfPP;
-  my $pp = Devel::DProfPP->new
+  my $pp = Devel::DProfPP->new;
 
   Devel::DProfPP->new(
         file    => "../tmon.out",
         enter   => sub { my ($self, $sub_name)  = shift;
-                         my $topframe = ($self->stack)[-1];
+                         my $frame = ($self->stack)[-1];
                          print "\t" x $frame->height, $frame->sub_name;
                        }
   )->parse;
@@ -303,7 +303,8 @@ omission should't make any real difference.
 
 =head1 AUTHOR
 
-Simon Cozens, C<simon@cpan.org>
+Simon Cozens is the original author.  Currently maintained by 
+Steve Peters, C<steve@fisharerojo.org>
 
 =head1 LICENSE
 
